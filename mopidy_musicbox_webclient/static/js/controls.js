@@ -17,37 +17,37 @@ function playBrowsedTracks(addtoqueue, trackid) {
     if (isStream) {
         mopidy.tracklist.add(null, null, trackid);
     } else {
-          //add selected item to the playlist
-        $('.browsetrack').each(function() { 
-    	    if (this.id == trackid) {
-	      selected = counter;
+        //add selected item to the playlist
+        $('.browsetrack').each(function() {
+            if (this.id == trackid) {
+                selected = counter;
             }
             mopidy.tracklist.add(null, null, this.id);
-	    counter++;
-        } );
+            counter++;
+        });
     }
 
-//play selected item
-    if (!addtoqueue) { 
+    //play selected item
+    if (!addtoqueue) {
         mopidy.playback.stop();
-	for (var i = 0; i <= selected; i++) {
-        	mopidy.playback.next();
-	}
+        for (var i = 0; i <= selected; i++) {
+            mopidy.playback.next();
+        }
         mopidy.playback.play(); //tracks[selected]);
     }
 
     //add all items, but selected to the playlist
     selected = 0;
     counter = 0
-/*    if(!isStream) {
-        $('.browsetrack').each(function() { 
-    	  //do not add selected song again
-    	  if (this.id == trackid) {
-		    selected = counter;
-	      } else {
-	      	mopidy.tracklist.add(null, counter, this.id);
-	      }
-	      counter++;
+    /*    if(!isStream) {
+        $('.browsetrack').each(function() {
+          //do not add selected song again
+          if (this.id == trackid) {
+            selected = counter;
+          } else {
+              mopidy.tracklist.add(null, counter, this.id);
+          }
+          counter++;
         } );
       }
 */
@@ -62,12 +62,14 @@ function playTrack(addtoqueue) {
     var hash = document.location.hash.split('?');
     var divid = hash[0].substr(1);
 
-    if (!addtoqueue) { addtoqueue = PLAY_NOW; }
+    if (!addtoqueue) {
+        addtoqueue = PLAY_NOW;
+    }
 
-//    console.log(addtoqueue, divid);
+    //    console.log(addtoqueue, divid);
 
     //stop directly, for user feedback. If searchresults, also clear queue
-    if (!addtoqueue || ( (addtoqueue == PLAY_NOW) && (divid == 'search')) ) {
+    if (!addtoqueue || ((addtoqueue == PLAY_NOW) && (divid == 'search'))) {
         mopidy.playback.stop(true);
         mopidy.tracklist.clear();
     }
@@ -83,21 +85,21 @@ function playTrack(addtoqueue) {
     var track, tracksbefore, tracksafter;
     var tracks = getTracksFromUri(playlisturi);
 
-//find track that was selected
+    //find track that was selected
     for (var selected = 0; selected < tracks.length; selected++) {
         if (tracks[selected].uri == uri) {
             break;
-        }
+q        }
     }
 
-//find track that is playing
+    //find track that is playing
     for (var playing = 0; playing < currentplaylist.length; playing++) {
         if (currentplaylist[playing].uri == songdata.uri) {
             break;
         }
     }
 
-//switch popup options
+    //switch popup options
     switch (addtoqueue) {
         case PLAY_NOW:
             if (divid == 'search') {
@@ -115,15 +117,15 @@ function playTrack(addtoqueue) {
             mopidy.tracklist.add(tracks);
             return false;
     }
-// PLAY_NOW, play the selected track 
-//    mopidy.tracklist.add(null, null, uri); //tracks);
+    // PLAY_NOW, play the selected track
+    //    mopidy.tracklist.add(null, null, uri); //tracks);
     mopidy.tracklist.add(tracks);
 
-    if (!addtoqueue) { 
+    if (!addtoqueue) {
         mopidy.playback.stop();
-	for (var i = 0; i <= selected; i++) {
-        	mopidy.playback.next();
-	}
+        for (var i = 0; i <= selected; i++) {
+            mopidy.playback.next();
+        }
         mopidy.playback.play();
     }
 
@@ -135,7 +137,7 @@ function playTrack(addtoqueue) {
  * @param track_uri, playlist_uri
  * @returns {boolean}
  */
-function playTrackByUri(track_uri, playlist_uri){
+function playTrackByUri(track_uri, playlist_uri) {
     // Stop directly, for user feedback
     mopidy.playback.stop(true);
     mopidy.tracklist.clear();
@@ -179,14 +181,16 @@ function playTrackByUri(track_uri, playlist_uri){
  * @param playlisturi
  * @returns {boolean}
  */
-function playTrackQueueByUri(uri, playlisturi){
-//    console.log('playquuri');
+function playTrackQueueByUri(uri, playlisturi) {
+    //    console.log('playquuri');
     //stop directly, for user feedback
     mopidy.playback.stop(true);
     $('#popupQueue').popup('close');
     toast('Loading...');
 
-    mopidy.tracklist.filter({'uri': [uri]}).then(
+    mopidy.tracklist.filter({
+        'uri': [uri]
+    }).then(
         function(tltracks) {
             if (tltracks.length > 0) {
                 mopidy.playback.play(tltracks[0]);
@@ -203,7 +207,7 @@ function playTrackQueueByUri(uri, playlisturi){
  * @returns {boolean}
  */
 function playTrackQueue() {
-//    console.log('playqu');
+    //    console.log('playqu');
     playlisturi = $('#popupQueue').data("list");
     uri = $('#popupQueue').data("track");
     return playTrackQueueByUri(uri, playlisturi);
@@ -227,7 +231,7 @@ function removeTrack() {
     var track = {};
     track.uri = [currentplaylist[i].uri];
     mopidy.tracklist.remove(track);
-//    console.log(currentplaylist[i].uri);
+    //    console.log(currentplaylist[i].uri);
 }
 
 function clearQueue() {
@@ -316,17 +320,17 @@ function setRandom(nwrandom) {
 
 function doRandom() {
     if (random == false) {
-	//check for mopidy 0.16.x or higher
-	if (mopidy.tracklist.setRandom) { 
-		mopidy.tracklist.setRandom(true).then();
-	} else {
+        //check for mopidy 0.16.x or higher
+        if (mopidy.tracklist.setRandom) {
+            mopidy.tracklist.setRandom(true).then();
+        } else {
             mopidy.playback.setRandom(true).then();
         }
     } else {
-	//check for mopidy 0.16.x or higher
-	if (mopidy.tracklist.setRandom) { 
-		mopidy.tracklist.setRandom(false).then();
-	} else {
+        //check for mopidy 0.16.x or higher
+        if (mopidy.tracklist.setRandom) {
+            mopidy.tracklist.setRandom(false).then();
+        } else {
             mopidy.playback.setRandom(false).then();
         }
     }
@@ -335,19 +339,19 @@ function doRandom() {
 
 function doRepeat() {
     if (repeat == false) {
-	//check for mopidy 0.16.x or higher
-	if (mopidy.tracklist.setRepeat) { 
+        //check for mopidy 0.16.x or higher
+        if (mopidy.tracklist.setRepeat) {
             mopidy.tracklist.setRepeat(true).then();
         } else {
-    	    mopidy.playback.setRepeat(true).then();
-    	}
+            mopidy.playback.setRepeat(true).then();
+        }
     } else {
-	//check for mopidy 0.16.x or higher
-	if (mopidy.tracklist.setRepeat) { 
+        //check for mopidy 0.16.x or higher
+        if (mopidy.tracklist.setRepeat) {
             mopidy.tracklist.setRepeat(false).then();
         } else {
-    	    mopidy.playback.setRepeat(false).then();
-    	}
+            mopidy.playback.setRepeat(false).then();
+        }
     }
     setRepeat(!repeat);
 }
@@ -416,10 +420,10 @@ function doSeekPos(value) {
 function triggerPos() {
     if (mopidy) {
         posChanging = true;
-//        mopidy.playback.pause();
-//	console.log(newposition);
+        //        mopidy.playback.pause();
+        //    console.log(newposition);
         mopidy.playback.seek(newposition);
-//        mopidy.playback.resume();
+        //        mopidy.playback.resume();
         resumePosTimer();
         posChanging = false;
     }
@@ -592,7 +596,7 @@ function updateStreamUris() {
         if (rs) {
             name = rs[0] || rs[1];
             child = '<li><span class="ui-icon ui-icon-delete ui-icon-shadow" style="float:right; margin: .5em; margin-top: .8em;"><a href="#" onclick="return deleteStreamUri(\'' + rs[1] + '\');">&nbsp;</a></span>' +
-                '<i class="fa fa-rss" style="float: left; padding: .5em; padding-top: 1em;"></i>' +     
+                '<i class="fa fa-rss" style="float: left; padding: .5em; padding-top: 1em;"></i>' +
                 ' <a style="margin-left: 20px" href="#" onclick="return playStreamUri(\'' + rs[1] + '\');">';
             child += '<h1>' + name + '</h1></a></li>';
             tmp += child;
@@ -611,11 +615,15 @@ function initStreams() {
 function haltSystem() {
     $.post("/settings/shutdown");
     toast('Stopping system...', 10000);
-    setTimeout(function(){window.history.back();}, 10000);
+    setTimeout(function() {
+        window.history.back();
+    }, 10000);
 }
 
 function rebootSystem() {
     $.post("/settings/reboot");
     toast('Rebooting...', 10000);
-    setTimeout(function(){window.history.back();}, 10000);
+    setTimeout(function() {
+        window.history.back();
+    }, 10000);
 }
