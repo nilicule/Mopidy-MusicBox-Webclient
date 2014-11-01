@@ -138,6 +138,19 @@ q        }
  * @returns {boolean}
  */
 function playTrackByUri(track_uri, playlist_uri) {
+    function findAndPlayTrack(tltracks) {
+//        console.log('fa', tltracks, track_uri);
+        if (tltracks == []) { return;} 
+        // Find track that was selected
+        for (var selected = 0; selected < tltracks.length; selected++) {
+            if (tltracks[selected].track.uri == track_uri) {
+                mopidy.playback.play(tltracks[selected]);
+                return;
+            }
+        }
+        console.log('Failed to play selected track ', track_uri);
+    }
+
     // Stop directly, for user feedback
     mopidy.playback.stop(true);
     mopidy.tracklist.clear();
@@ -150,22 +163,15 @@ function playTrackByUri(track_uri, playlist_uri) {
     toast('Loading...');
 
     var func;
-    if (playlist_uri == 'trackresultscache') {
-        var tracks = getTracksFromUri(playlist_uri);
-        func = mopidy.tracklist.add(tracks);
-    } else {
-        func = mopidy.tracklist.add(null, null, playlist_uri);
-    }
+    func = mopidy.tracklist.add(null, null, playlist_uri);
     func.then(
         function(tltracks) {
-            // Find track that was selected
-            for (var selected = 0; selected < tltracks.length; selected++) {
-                if (tltracks[selected].track.uri == track_uri) {
-                    mopidy.playback.play(tltracks[selected]);
-                    return;
-                }
+            //check if tltracks is filled, some backends (gmusic) do not support adding by uri, it seems
+            if (tltracks.length == 0) {
+                var tracks = getTracksFromUri(playlist_uri);
+                mopidy.tracklist.add(tracks).then(findAndPlayTrack);
             }
-            console.log('Failed to play selected track ', track_uri);
+            findAndPlayTrack(tltracks);
         }
     ).then(getCurrentPlaylist()); // Updates some state
     return false;
