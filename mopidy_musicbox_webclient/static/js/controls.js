@@ -89,7 +89,7 @@ function playTrack(addtoqueue) {
     for (var selected = 0; selected < tracks.length; selected++) {
         if (tracks[selected].uri == uri) {
             break;
-q        }
+        }
     }
 
     //find track that is playing
