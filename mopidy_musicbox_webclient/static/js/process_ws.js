@@ -59,17 +59,12 @@ function processPlaystate(data) {
  * process results of a browse list
  *********************************************************/
 function processBrowseDir(resultArr) {
-    /*<p><ul><li>Donec id elit non mi porta</li><li>Gravida at eget metus. Fusce dapibus.</li><li>Tellus ac cursus commodo</li></p>
-     <p><a class="btn" href="#">More &raquo;</a></p>
-     */
-
-    if ((!resultArr) || (resultArr == '')) {
+    var backHtml = '<li style="background-color:#ccc"><a href="#" onclick="return getBrowseDir();"><h1 class="trackname"><i class="fa fa-arrow-circle-left"></i> Back</h1></a></li>'
+    if ( (!resultArr) || (resultArr == '') || (resultArr.length == 0) ) {
+        $('#browsepath').html('No tracks found...');
+        $('#browselist').html(backHtml);
+        showLoading(false);
         return;
-    }
-//    console.log(resultArr);
-
-    if (resultArr.length == 0) {
-	return;
     }
 
     $('#browselist').empty();
@@ -94,8 +89,7 @@ function processBrowseDir(resultArr) {
     rooturi = rooturi.slice(0, lastindex);
 
     if (browseStack.length > 0) {
-//	child += '<li><a href="#" onclick="return getBrowseDir();"><h1 class="trackname">..</h1></a></li>';
-	child += '<li style="background-color:#ccc"><a href="#" onclick="return getBrowseDir();"><h1 class="trackname"><i class="fa fa-arrow-circle-left"></i> Back</h1></a></li>';
+	child += backHtml;
     }
 
     for (var i = 0; i < resultArr.length; i++) {
